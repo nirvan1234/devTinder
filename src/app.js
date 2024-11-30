@@ -1,18 +1,49 @@
 const express = require("express");
+const connectDB = require("./config/database");
+const userModel = require("./model/user")
 
 const app = express();
 
-// we can handle Auth Middleware for GET, POST , DELETE , PUT , PATCH we want all the methods should be Authorized
-app.use("/admin",(req, res , next) =>{
-    const token = "xyz";
-    const isAuthorized = token === "xyz";
-    if(!isAuthorized){
-        res.status(401).send("unauthorized");
-    }else{
-       next();
-    }
-    
+// Post API as per new schema
+app.post("/signup", async (req, res) =>{
+   //creating new instance of userModel
+   const user = new userModel({
+    firtName:"Arjun",
+    lastName:"Pandit",
+    age:"23",
+   })
+
+   await user.save();
+   res.send("User Added Successfully");
 })
+
+//Mongoose Basics
+
+connectDB().
+then( () =>{
+    console.log("Database connection established");
+    app.listen(4000, () =>{
+        console.log("Server is listening at 4000...")
+    })
+}).catch(() =>{
+    console.log("Database connection cannnot be established");
+})
+
+
+
+
+//Express Basics
+// we can handle Auth Middleware for GET, POST , DELETE , PUT , PATCH we want all the methods should be Authorized
+// app.use("/admin",(req, res , next) =>{
+//     const token = "xyz";
+//     const isAuthorized = token === "xyz";
+//     if(!isAuthorized){
+//         res.status(401).send("unauthorized");
+//     }else{
+//        next();
+//     }
+    
+// })
 
 // app.use("/about", (req, res) =>{
 //     res.send("I am Nirvan. I am developer.")
@@ -24,29 +55,29 @@ app.use("/admin",(req, res , next) =>{
 // })
 
 //Throws Error if we send response from both as once TCI/IP connection is closed then it won't be posssible to send reponse again
-app.get("/user",
-//Basically this is middleware where we want to do something before request is send
- (req, res , next) =>{
-    console.log("handling the route user 1!");
-    // res.send({firstName:"Nirvan", lastName:"Pandagre"});
-    next();
-} ,
-(req, res) =>{
-    console.log("handling the route user 2!");
-    res.send({firstName:"shilpa", lastName:"Khupse"});
-});
+// app.get("/user",
+// //Basically this is middleware where we want to do something before request is send
+//  (req, res , next) =>{
+//     console.log("handling the route user 1!");
+//     // res.send({firstName:"Nirvan", lastName:"Pandagre"});
+//     next();
+// } ,
+// (req, res) =>{
+//     console.log("handling the route user 2!");
+//     res.send({firstName:"shilpa", lastName:"Khupse"});
+// });
 
 
-app.get("/admin/getAllData",(req, res) =>{
-    //logic of checking if req is out
-    // const token = "xyz";
-    // const isAuthorized = token === "xyz";
-    // if(isAuthorized){
-       res.send("All Data Sent");
-    // }else{
-    //    res.status(401).send("unauthorized");
-    // }
-})
+// app.get("/admin/getAllData",(req, res) =>{
+//     //logic of checking if req is out
+//     // const token = "xyz";
+//     // const isAuthorized = token === "xyz";
+//     // if(isAuthorized){
+//        res.send("All Data Sent");
+//     // }else{
+//     //    res.status(401).send("unauthorized");
+//     // }
+// })
 
 
 //we can send any no from url and it will get recieved here as req.params http://localhost:4000/user/786
@@ -81,14 +112,14 @@ app.get("/admin/getAllData",(req, res) =>{
 //     res.send({firstName:"khanaiya", lastName:"Das"})
 // } );
 
-app.post("/user", (req, res) =>{
-    res.send("Data send successfully ")
+// app.post("/user", (req, res) =>{
+//     res.send("Data send successfully ")
 
-})
+// })
 
-app.delete("/user",(req, res) =>{
-    res.send("Delete successfully")
-})
+// app.delete("/user",(req, res) =>{
+//     res.send("Delete successfully")
+// })
 
 //this will allow all the req to run above it
 // app.use("/",(req,res) =>{
@@ -96,12 +127,12 @@ app.delete("/user",(req, res) =>{
 // })
 
 //Error handling should always be done at the last if Try and Catch break this at end will handle error
-app.use("/", (err,req,res,next) =>{
-    if(err){
-        res.status(500).send("Something went Wrong")
-    }
-})
+// app.use("/", (err,req,res,next) =>{
+//     if(err){
+//         res.status(500).send("Something went Wrong")
+//     }
+// })
 
-app.listen(4000, () =>{
-    console.log("Server is listening at 4000...")
-})
+// app.listen(4000, () =>{
+//     console.log("Server is listening at 4000...")
+// })
