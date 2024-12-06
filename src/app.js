@@ -1,20 +1,66 @@
 const express = require("express");
 const connectDB = require("./config/database");
-const userModel = require("./model/user")
+const User = require("./model/user")
 
 const app = express();
 
+//This code will run for every request route
+app.use(express.json());
+
 // Post API as per new schema
 app.post("/signup", async (req, res) =>{
-   //creating new instance of userModel
-   const user = new userModel({
-    firtName:"Arjun",
-    lastName:"Pandit",
-    age:"23",
-   })
+    //this will be undefided if we will not use middleware
+    //middleware will read the JSON obj convert it into JavaScript Obj
+    console.log(req.body)
 
-   await user.save();
-   res.send("User Added Successfully");
+    const { name, email, password } = req.body;
+    //creating new instance of userModel 
+    const newUser = new User({ name, email, password })
+
+   await newUser.save().then(
+    () => {
+        res.status(200).json({ message: "user registered successfully!!" })
+    }
+).catch(error => {
+    console.log("Error registering");
+    res.status(500).json({ message: "Error registering the user" })
+}
+)
+})
+
+app.get("/user", async (req , res) =>{
+console.log(req.body.email);
+   try {
+    const user = await User.findOne({email: req.body.email})
+    res.send(user);
+   } catch (error) {
+    res.status(400).send("Something went wrong")
+   }
+
+})
+
+//Delete a user
+app.delete("/user", async (req, res) =>{
+    const userId = req.body._id;
+    console.log(userId);
+    try{
+        await User.findByIdAndDelete({_id :userId})
+        res.send("user Deleted successufully")
+    }catch (error) {;
+        res.status(400).send("Something went wrong")
+    }
+})
+
+//update User
+app.patch("/user", async (req, res) =>{
+    const userId = req.body._id;
+    const data = req.body;
+    try {
+        await User.findByIdAndUpdate({_id: userId}, data)
+        res.send("user updated successfully")
+    } catch (error) {
+        res.status(400).send("something went wrong")
+    }
 })
 
 //Mongoose Basics
